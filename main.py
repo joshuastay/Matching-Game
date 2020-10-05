@@ -1,5 +1,6 @@
 import pygame
 import random
+import time
 from pygame.locals import (
     K_ESCAPE,
     KEYDOWN,
@@ -40,6 +41,9 @@ x_foodr3 = int(width * .484)
 x_foodr4 = int(width * .641)
 x_foodr5 = int(width * .797)
 
+cover_rect = pygame.Rect(0, 384, 256, 128)
+score = 0
+
 
 class CloudHandler:
     def __init__(self, speed):
@@ -52,6 +56,49 @@ class CloudHandler:
         if self.x > width:
             self.x = -200
             self.y = random.randrange(height)
+
+
+class FoodCloud:
+    def __init__(self, x, y, food_image, food_rect, cloud_image, cloud_rect, surface):
+        self.x = x
+        self.y = y
+        self.food_image = food_image
+        self.food_rect = food_rect
+        self.cloud_image = cloud_image
+        self.cloud_rect = cloud_rect
+        self.surface = surface
+
+    def draw_food(self):
+        self.surface.blit(self.food_image, (self.x, self.y), self.food_rect)
+
+    def draw_cloud(self):
+        self.surface.blit(self.cloud_image, (self.x - 100, self.y - 32), self.cloud_rect)
+
+    def collision(self, pos):
+        new_rect = pygame.Rect(self.x, self.y, 256, 128)
+        return new_rect.collidepoint(pos)
+
+
+grid1_1 = FoodCloud(x_foodr1, y_foodr1, foods, food_dict['chicken'], cloud_cover, cover_rect, game_screen)
+grid1_2 = FoodCloud(x_foodr2, y_foodr1, foods, food_dict['donut'], cloud_cover, cover_rect, game_screen)
+grid1_3 = FoodCloud(x_foodr3, y_foodr1, foods, food_dict['apple'], cloud_cover, cover_rect, game_screen)
+grid1_4 = FoodCloud(x_foodr4, y_foodr1, foods, food_dict['banana'], cloud_cover, cover_rect, game_screen)
+grid1_5 = FoodCloud(x_foodr5, y_foodr1, foods, food_dict['strawberry'], cloud_cover, cover_rect, game_screen)
+grid2_1 = FoodCloud(x_foodr1, y_foodr2, foods, food_dict['sushi'], cloud_cover, cover_rect, game_screen)
+grid2_2 = FoodCloud(x_foodr2, y_foodr2, foods, food_dict['watermelon'], cloud_cover, cover_rect, game_screen)
+grid2_3 = FoodCloud(x_foodr3, y_foodr2, foods, food_dict['egg'], cloud_cover, cover_rect, game_screen)
+grid2_4 = FoodCloud(x_foodr4, y_foodr2, foods, food_dict['fries'], cloud_cover, cover_rect, game_screen)
+grid2_5 = FoodCloud(x_foodr5, y_foodr2, foods, food_dict['hamburger'], cloud_cover, cover_rect, game_screen)
+grid3_1 = FoodCloud(x_foodr1, y_foodr3, foods, food_dict['hamburger'], cloud_cover, cover_rect, game_screen)
+grid3_2 = FoodCloud(x_foodr2, y_foodr3, foods, food_dict['fries'], cloud_cover, cover_rect, game_screen)
+grid3_3 = FoodCloud(x_foodr3, y_foodr3, foods, food_dict['egg'], cloud_cover, cover_rect, game_screen)
+grid3_4 = FoodCloud(x_foodr4, y_foodr3, foods, food_dict['watermelon'], cloud_cover, cover_rect, game_screen)
+grid3_5 = FoodCloud(x_foodr5, y_foodr3, foods, food_dict['sushi'], cloud_cover, cover_rect, game_screen)
+grid4_1 = FoodCloud(x_foodr1, y_foodr4, foods, food_dict['strawberry'], cloud_cover, cover_rect, game_screen)
+grid4_2 = FoodCloud(x_foodr2, y_foodr4, foods, food_dict['banana'], cloud_cover, cover_rect, game_screen)
+grid4_3 = FoodCloud(x_foodr3, y_foodr4, foods, food_dict['apple'], cloud_cover, cover_rect, game_screen)
+grid4_4 = FoodCloud(x_foodr4, y_foodr4, foods, food_dict['donut'], cloud_cover, cover_rect, game_screen)
+grid4_5 = FoodCloud(x_foodr5, y_foodr4, foods, food_dict['chicken'], cloud_cover, cover_rect, game_screen)
 
 
 class CloudCover:
@@ -70,7 +117,15 @@ class CloudCover:
         return new_rect.collidepoint(pos)
 
 
-cover_rect = pygame.Rect(0, 384, 256, 128)
+food_list = [grid1_1, grid1_2, grid1_3, grid1_4, grid1_5, grid2_1,
+             grid2_2, grid2_3, grid2_4, grid2_5, grid3_1, grid3_2,
+             grid3_3, grid3_4, grid3_5, grid4_1, grid4_2, grid4_3,
+             grid4_4, grid4_5]
+
+cloud_cover_list = [grid1_1, grid1_2, grid1_3, grid1_4, grid1_5, grid2_1,
+                    grid2_2, grid2_3, grid2_4, grid2_5, grid3_1, grid3_2,
+                    grid3_3, grid3_4, grid3_5, grid4_1, grid4_2, grid4_3,
+                    grid4_4, grid4_5]
 
 cover1 = CloudCover(x_foodr1 - 100, y_foodr1 - 32, cloud_cover, game_screen, cover_rect)
 cover2 = CloudCover(x_foodr2 - 100, y_foodr1 - 32, cloud_cover, game_screen, cover_rect)
@@ -95,6 +150,7 @@ cover20 = CloudCover(x_foodr5 - 100, y_foodr4 - 32, cloud_cover, game_screen, co
 
 cover_list = [cover1, cover2, cover3, cover4, cover5, cover6, cover7, cover8, cover9, cover10, cover11, cover12,
               cover13, cover14, cover15, cover16, cover17, cover18, cover19, cover20]
+
 reveal_list = list()
 
 cloud1 = CloudHandler(1)
@@ -121,36 +177,28 @@ while running:
         cloud.cloud_update()
         game_screen.blit(clouds, (int(cloud.x), cloud.y), (0, 0, 168, 96))
 
-    game_screen.blit(foods, (x_foodr1, y_foodr1), food_dict['chicken'])
-    game_screen.blit(foods, (x_foodr2, y_foodr1), food_dict['donut'])
-    game_screen.blit(foods, (x_foodr3, y_foodr1), food_dict['apple'])
-    game_screen.blit(foods, (x_foodr4, y_foodr1), food_dict['banana'])
-    game_screen.blit(foods, (x_foodr5, y_foodr1), food_dict['strawberry'])
-    game_screen.blit(foods, (x_foodr1, y_foodr2), food_dict['sushi'])
-    game_screen.blit(foods, (x_foodr2, y_foodr2), food_dict['watermelon'])
-    game_screen.blit(foods, (x_foodr3, y_foodr2), food_dict['egg'])
-    game_screen.blit(foods, (x_foodr4, y_foodr2), food_dict['fries'])
-    game_screen.blit(foods, (x_foodr5, y_foodr2), food_dict['hamburger'])
-    game_screen.blit(foods, (x_foodr1, y_foodr3), food_dict['hamburger'])
-    game_screen.blit(foods, (x_foodr2, y_foodr3), food_dict['fries'])
-    game_screen.blit(foods, (x_foodr3, y_foodr3), food_dict['egg'])
-    game_screen.blit(foods, (x_foodr4, y_foodr3), food_dict['watermelon'])
-    game_screen.blit(foods, (x_foodr5, y_foodr3), food_dict['sushi'])
-    game_screen.blit(foods, (x_foodr1, y_foodr4), food_dict['strawberry'])
-    game_screen.blit(foods, (x_foodr2, y_foodr4), food_dict['banana'])
-    game_screen.blit(foods, (x_foodr3, y_foodr4), food_dict['apple'])
-    game_screen.blit(foods, (x_foodr4, y_foodr4), food_dict['donut'])
-    game_screen.blit(foods, (x_foodr5, y_foodr4), food_dict['chicken'])
+    for food in food_list:
+        food.draw_food()
 
-    for each in cover_list:
-        each.draw()
-    if pygame.mouse.get_pressed()[0]:
-        print('mouse clicked!')
-        pos = pygame.mouse.get_pos()
-        print(pos)
-        for cloud in cover_list:
-            if cloud.collision(pos):
-                cover_list.remove(cloud)
+    for cloud in cloud_cover_list:
+        cloud.draw_cloud()
+
+    if event.type == pygame.MOUSEBUTTONDOWN:
+        if event.button == 1:
+            print('mouse clicked!')
+            pos = pygame.mouse.get_pos()
+            print(pos)
+            for cloud in cloud_cover_list:
+                if cloud.collision(pos):
+                    reveal_list.append(cloud)
+                    cloud_cover_list.remove(cloud)
+            if len(reveal_list) == 2 and reveal_list[0].food_rect == reveal_list[1].food_rect:
+                score += 1
+                reveal_list.clear()
+            elif len(reveal_list) == 2 and reveal_list[0].food_rect != reveal_list[1].food_rect:
+                for each in reveal_list:
+                    cloud_cover_list.append(each)
+                reveal_list.clear()
 
     pygame.display.flip()
 
