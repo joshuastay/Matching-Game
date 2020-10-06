@@ -1,6 +1,5 @@
 import pygame
 import random
-import time
 from pygame.locals import (
     K_ESCAPE,
     KEYDOWN,
@@ -74,9 +73,9 @@ class FoodCloud:
     def draw_cloud(self):
         self.surface.blit(self.cloud_image, (self.x - 100, self.y - 32), self.cloud_rect)
 
-    def collision(self, pos):
-        new_rect = pygame.Rect(self.x, self.y, 256, 128)
-        return new_rect.collidepoint(pos)
+    def collision(self, mouse_pos):
+        new_rect = pygame.Rect(self.x - 100, self.y - 32, 256, 128)
+        return new_rect.collidepoint(mouse_pos)
 
 
 grid1_1 = FoodCloud(x_foodr1, y_foodr1, foods, food_dict['chicken'], cloud_cover, cover_rect, game_screen)
@@ -100,23 +99,6 @@ grid4_3 = FoodCloud(x_foodr3, y_foodr4, foods, food_dict['apple'], cloud_cover, 
 grid4_4 = FoodCloud(x_foodr4, y_foodr4, foods, food_dict['donut'], cloud_cover, cover_rect, game_screen)
 grid4_5 = FoodCloud(x_foodr5, y_foodr4, foods, food_dict['chicken'], cloud_cover, cover_rect, game_screen)
 
-
-class CloudCover:
-    def __init__(self, x, y, image, surface, rect_size):
-        self.x = x
-        self.y = y
-        self.image = image
-        self.surface = surface
-        self.rect_size = rect_size
-
-    def draw(self):
-        self.surface.blit(self.image, (self.x, self.y), self.rect_size)
-
-    def collision(self, pos):
-        new_rect = pygame.Rect(self.x, self.y, 256, 128)
-        return new_rect.collidepoint(pos)
-
-
 food_list = [grid1_1, grid1_2, grid1_3, grid1_4, grid1_5, grid2_1,
              grid2_2, grid2_3, grid2_4, grid2_5, grid3_1, grid3_2,
              grid3_3, grid3_4, grid3_5, grid4_1, grid4_2, grid4_3,
@@ -126,30 +108,6 @@ cloud_cover_list = [grid1_1, grid1_2, grid1_3, grid1_4, grid1_5, grid2_1,
                     grid2_2, grid2_3, grid2_4, grid2_5, grid3_1, grid3_2,
                     grid3_3, grid3_4, grid3_5, grid4_1, grid4_2, grid4_3,
                     grid4_4, grid4_5]
-
-cover1 = CloudCover(x_foodr1 - 100, y_foodr1 - 32, cloud_cover, game_screen, cover_rect)
-cover2 = CloudCover(x_foodr2 - 100, y_foodr1 - 32, cloud_cover, game_screen, cover_rect)
-cover3 = CloudCover(x_foodr3 - 100, y_foodr1 - 32, cloud_cover, game_screen, cover_rect)
-cover4 = CloudCover(x_foodr4 - 100, y_foodr1 - 32, cloud_cover, game_screen, cover_rect)
-cover5 = CloudCover(x_foodr5 - 100, y_foodr1 - 32, cloud_cover, game_screen, cover_rect)
-cover6 = CloudCover(x_foodr1 - 100, y_foodr2 - 32, cloud_cover, game_screen, cover_rect)
-cover7 = CloudCover(x_foodr2 - 100, y_foodr2 - 32, cloud_cover, game_screen, cover_rect)
-cover8 = CloudCover(x_foodr3 - 100, y_foodr2 - 32, cloud_cover, game_screen, cover_rect)
-cover9 = CloudCover(x_foodr4 - 100, y_foodr2 - 32, cloud_cover, game_screen, cover_rect)
-cover10 = CloudCover(x_foodr5 - 100, y_foodr2 - 32, cloud_cover, game_screen, cover_rect)
-cover11 = CloudCover(x_foodr1 - 100, y_foodr3 - 32, cloud_cover, game_screen, cover_rect)
-cover12 = CloudCover(x_foodr2 - 100, y_foodr3 - 32, cloud_cover, game_screen, cover_rect)
-cover13 = CloudCover(x_foodr3 - 100, y_foodr3 - 32, cloud_cover, game_screen, cover_rect)
-cover14 = CloudCover(x_foodr4 - 100, y_foodr3 - 32, cloud_cover, game_screen, cover_rect)
-cover15 = CloudCover(x_foodr5 - 100, y_foodr3 - 32, cloud_cover, game_screen, cover_rect)
-cover16 = CloudCover(x_foodr1 - 100, y_foodr4 - 32, cloud_cover, game_screen, cover_rect)
-cover17 = CloudCover(x_foodr2 - 100, y_foodr4 - 32, cloud_cover, game_screen, cover_rect)
-cover18 = CloudCover(x_foodr3 - 100, y_foodr4 - 32, cloud_cover, game_screen, cover_rect)
-cover19 = CloudCover(x_foodr4 - 100, y_foodr4 - 32, cloud_cover, game_screen, cover_rect)
-cover20 = CloudCover(x_foodr5 - 100, y_foodr4 - 32, cloud_cover, game_screen, cover_rect)
-
-cover_list = [cover1, cover2, cover3, cover4, cover5, cover6, cover7, cover8, cover9, cover10, cover11, cover12,
-              cover13, cover14, cover15, cover16, cover17, cover18, cover19, cover20]
 
 reveal_list = list()
 
@@ -161,6 +119,15 @@ cloud4 = CloudHandler(1.5)
 cloud_list = [cloud1, cloud2, cloud3, cloud4]
 
 running = True
+timer = 0
+
+
+def clouds_function():
+    while running:
+        for background_cloud in cloud_list:
+            background_cloud.cloud_update()
+            game_screen.blit(clouds, (int(background_cloud.x), background_cloud.y), (0, 0, 168, 96))
+
 
 while running:
     for event in pygame.event.get():
@@ -170,6 +137,28 @@ while running:
 
         elif event.type == QUIT:
             running = False
+
+        elif event.type == pygame.MOUSEBUTTONUP:
+            if event.button == 1:
+                print('mouse clicked!')
+                pos = pygame.mouse.get_pos()
+                print(pos)
+                timer = 40
+                for cloud in cloud_cover_list:
+                    if cloud.collision(pos):
+                        reveal_list.append(cloud)
+                        cloud_cover_list.remove(cloud)
+
+    if timer > 0:
+        timer -= 1
+
+    if len(reveal_list) >= 2 and reveal_list[0].food_rect == reveal_list[1].food_rect and timer == 0:
+        score += 1
+        reveal_list.clear()
+    elif len(reveal_list) >= 2 and reveal_list[0].food_rect != reveal_list[1].food_rect and timer == 0:
+        for each in reveal_list:
+            cloud_cover_list.append(each)
+        reveal_list.clear()
 
     game_screen.fill((51, 204, 255))
 
@@ -182,23 +171,6 @@ while running:
 
     for cloud in cloud_cover_list:
         cloud.draw_cloud()
-
-    if event.type == pygame.MOUSEBUTTONDOWN:
-        if event.button == 1:
-            print('mouse clicked!')
-            pos = pygame.mouse.get_pos()
-            print(pos)
-            for cloud in cloud_cover_list:
-                if cloud.collision(pos):
-                    reveal_list.append(cloud)
-                    cloud_cover_list.remove(cloud)
-            if len(reveal_list) == 2 and reveal_list[0].food_rect == reveal_list[1].food_rect:
-                score += 1
-                reveal_list.clear()
-            elif len(reveal_list) == 2 and reveal_list[0].food_rect != reveal_list[1].food_rect:
-                for each in reveal_list:
-                    cloud_cover_list.append(each)
-                reveal_list.clear()
 
     pygame.display.flip()
 
