@@ -46,14 +46,14 @@ score = 0
 
 class CloudHandler:
     def __init__(self, speed):
-        self.x = -200
+        self.x = -500
         self.speed = speed
         self.y = random.randrange(height)
 
     def cloud_update(self):
         self.x += self.speed
         if self.x > width:
-            self.x = -200
+            self.x = -500
             self.y = random.randrange(height)
 
 
@@ -126,7 +126,8 @@ def clouds_function():
     while running:
         for background_cloud in cloud_list:
             background_cloud.cloud_update()
-            game_screen.blit(clouds, (int(background_cloud.x), background_cloud.y), (0, 0, 168, 96))
+            #game_screen.blit(clouds, (int(background_cloud.x), background_cloud.y), (0, 0, 168, 96))
+            game_screen.blit(cloud_cover, (int(background_cloud.x), background_cloud.y), (0, 0, 512, 128))
 
 
 while running:
@@ -139,7 +140,7 @@ while running:
             running = False
 
         elif event.type == pygame.MOUSEBUTTONUP:
-            if event.button == 1:
+            if event.button == 1 and len(reveal_list) < 2:
                 print('mouse clicked!')
                 pos = pygame.mouse.get_pos()
                 print(pos)
@@ -152,7 +153,7 @@ while running:
     if timer > 0:
         timer -= 1
 
-    if len(reveal_list) >= 2 and reveal_list[0].food_rect == reveal_list[1].food_rect and timer == 0:
+    if len(reveal_list) >= 2 and reveal_list[0].food_rect == reveal_list[1].food_rect:
         score += 1
         reveal_list.clear()
     elif len(reveal_list) >= 2 and reveal_list[0].food_rect != reveal_list[1].food_rect and timer == 0:
@@ -164,7 +165,8 @@ while running:
 
     for cloud in cloud_list:
         cloud.cloud_update()
-        game_screen.blit(clouds, (int(cloud.x), cloud.y), (0, 0, 168, 96))
+        #game_screen.blit(clouds, (int(cloud.x), cloud.y), (0, 0, 168, 96))
+        game_screen.blit(cloud_cover, (int(cloud.x), cloud.y), (0, 128, 512, 128))
 
     for food in food_list:
         food.draw_food()
