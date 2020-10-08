@@ -29,7 +29,6 @@ screen_width = game_screen.get_width()
 screen_height = game_screen.get_height()
 
 text_font = pygame.font.SysFont('COMIC SANS MS', 100)
-win_font = pygame.font.SysFont('COMIC SANS MS', 400)
 
 game_surface = pygame.Surface((100, 100))
 
@@ -40,7 +39,9 @@ background_cloud = pygame.transform.scale(background_cloud, (512, 512))
 background_cloud.fill((255, 255, 255, 220), None, pygame.BLEND_RGBA_MULT)
 cloud_cover = pygame.image.load('cloudcover.png')
 cloud_cover = pygame.transform.scale(cloud_cover, (512, 512))
-winner_image = pygame.image.load('winner.png')
+winner_image = pygame.image.load('Winner.png')
+winner_image = pygame.transform.scale(winner_image, (screen_width, int(screen_height * (500/1440))))
+
 
 food_col_1 = int(screen_height * .092)
 food_col_2 = int(screen_height * .324)
@@ -173,7 +174,6 @@ while running:
 while winner:
     scoreboard = text_font.render('Score: ' + str(score), 1, (0, 0, 0))
     track_attempts = text_font.render('Attempts: ' + str(attempts), 1, (0, 0, 0))
-    win_text = text_font.render('YOU WON!', 1, (0, 0, 0))
 
     for event in pygame.event.get():
         if event.type == KEYDOWN:
@@ -189,7 +189,7 @@ while winner:
         cloud.cloud_update()
         cloud.background_cloud_draw()
 
-    game_screen.blit(winner_image, (int(screen_width * .293), int(screen_height * .174)), (500, 200, 1000, 700))
+    game_screen.blit(winner_image, (0, 100))
     game_screen.blit(scoreboard, (int(screen_width * .195), int(screen_height * .868)))
     game_screen.blit(track_attempts, (int(screen_width * .566), int(screen_height * .868)))
     pygame.display.flip()
